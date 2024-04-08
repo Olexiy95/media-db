@@ -1,10 +1,11 @@
 from fastapi import FastAPI, Depends, HTTPException, APIRouter
 from sqlalchemy.orm import Session
 import uuid
-from db_models import SessionLocal, engine, Base, Movie
-from schemas import MovieCreate, MovieSchema
+from common.db_models import SessionLocal, engine, Base, Movie
+from common.api_schemas import MovieCreate, MovieSchema
 
 app = FastAPI()
+
 Base.metadata.create_all(bind=engine)
 
 
@@ -30,6 +31,30 @@ def create_movie(movie: MovieCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_movie)
     return db_movie
+
+
+@router.get("/movies/{movie_id}", response_model=MovieSchema)
+def read_movie(movie_id: str, db: Session = Depends(get_db)):
+    db_movie = db.query(Movie).filter(Movie.id == movie_id).first()
+    if db_movie is None:
+        raise HTTPException(status_code=404, detail="Movie not found")
+    return db_movie
+
+
+@router.get("/movies/", response_model=list[MovieSchema])
+def read_movies(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    movies = db.query(Movie).offset(skip).limit(limit).all()
+    return movies
+
+
+@router.delete("/movies/{movie_id}")
+def delete_movie(movie_id: str, db: Session = Depends(get_db)):
+    db_movie = db.query(Movie).filter(Movie.id == movie_id).first()
+    if db_movie is None:
+        raise HTTPException(status_code=404, detail="Movie not found")
+    db.delete(db_movie)
+    db.commit()
+    return {"message": "Movie deleted successfully"}
 
 
 app.include_router(router)
