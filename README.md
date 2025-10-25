@@ -17,3 +17,18 @@
 ### Model (So Far):
 
 <img src="./media-db_model.png" alt="Description" width="350" height="500"/>
+
+Seed resources to CSV directory:
+
+```bash
+cp resources/actors_list.csv.example csv/actors_list.csv
+cp resources/genres_list.csv.example csv/genres_list.csv
+cp resources/movies_list.csv.example csv/movies_list.csv
+cp resources/shows_list.csv.example csv/shows_list.csv
+```
+
+Running the app:
+
+```bash
+python -m app.main
+```

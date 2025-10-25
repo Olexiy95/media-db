@@ -1,0 +1,136 @@
+{% extends "base.html" %} {% block content %}
+<div class="container mt-2">
+  <div class="row justify-content-center">
+    <div class="col-md-10">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover table-bordered align-middle mb-0">
+              <caption class="caption-top px-3 pt-3">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-people fs-4"></i>
+                    <h2 class="h5 mb-0">Actor List</h2>
+                    <span class="badge text-bg-secondary"
+                      >{{ actors|length }}</span
+                    >
+                  </div>
+
+                  <!-- Right side buttons -->
+                  <div class="d-flex align-items-center gap-2">
+                    {# Link version (simple) #}
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-primary"
+                      data-bs-toggle="modal"
+                      data-bs-target="#addActorModal"
+                    >
+                      <i class="bi bi-person-plus me-1"></i> Add actor
+                    </button>
+                  </div>
+                </div>
+              </caption>
+
+              <thead class="table-dark">
+                <tr>
+                  <th class="col-4">Actor</th>
+                  <th class="text-center col-4">Movies</th>
+                  <th class="text-center col-4">TV Shows</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% set ns = namespace(current_letter='') %} {% for actor in
+                actors|sort(attribute='name', case_sensitive=False) %} {% set
+                raw = (actor['name'] or '')|trim %} {% set ch = raw[:1].upper()
+                %} {% if ch.isalpha() %} {% set group = ch %} {% else %} {% set
+                group = '#' %} {% endif %} {# emit a header row when the group
+                changes #} {% if group != ns.current_letter %}
+                <tr
+                  class="table-primary fw-bold text-center group-header"
+                  style="pointer-events: none"
+                >
+                  <td class="fw-bold bg-secondary text-center" colspan="3">
+                    {{ group }}
+                  </td>
+                </tr>
+                {% set ns.current_letter = group %} {% endif %}
+
+                <tr
+                  class="clickable-row"
+                  role="button"
+                  data-href="/actors/{{ actor['actor_id'] }}"
+                >
+                  <td>
+                    {{ actor['name'] }} {% if actor['pseudonym'] %}
+                    <span class="text-muted">({{ actor['pseudonym'] }})</span>
+                    {% endif %}
+                  </td>
+                  <td class="text-center">{{ actor['movie_count'] }}</td>
+                  <td class="text-center">{{ actor['show_count'] or 0 }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# Add-Actor Modal #}
+<div
+  class="modal fade"
+  id="addActorModal"
+  tabindex="-1"
+  aria-labelledby="addActorLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <form
+      method="post"
+      action="/actors"
+      class="modal-content"
+      id="add-actor-form"
+    >
+      <div class="modal-header">
+        <h5 class="modal-title" id="addActorLabel">Add Actor</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Full name</label>
+          <input
+            name="full_name"
+            type="text"
+            class="form-control"
+            required
+            autofocus
+          />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Pseudonym (optional)</label>
+          <input name="pseudonym" type="text" class="form-control" />
+        </div>
+        {% if request.query_params.get('error') == 'exists' %}
+        <div class="alert alert-danger mb-0">Actor already exists.</div>
+        {% endif %}
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button class="btn btn-primary" type="submit" id="add-actor-submit">
+          <i class="bi bi-check2 me-1"></i> Save
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

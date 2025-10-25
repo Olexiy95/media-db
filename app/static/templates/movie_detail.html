@@ -1,0 +1,197 @@
+{% extends "base.html" %} {% block content %}
+
+<div class="container py-5">
+  <!-- Title / Header -->
+  <div
+    class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4"
+  >
+    <div class="d-flex align-items-center gap-3">
+      <h2 class="mb-0">
+        <a
+          class="text-decoration-none text-dark"
+          href="https://www.google.com/search?q={{ movie.title }} movie"
+          target="_blank"
+        >
+          {{ movie.title }}
+        </a>
+      </h2>
+      {% if movie['year'] %}
+      <span class="badge bg-secondary">{{ movie['year'] }}</span>
+      {% endif %}
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+      {% if movie['obtained'] == "Yes" %}
+      <span
+        class="badge rounded-pill bg-success d-inline-flex align-items-center"
+      >
+        <i class="bi bi-check2-circle me-1"></i> In collection
+      </span>
+      {% else %}
+      <span
+        class="badge rounded-pill bg-danger d-inline-flex align-items-center"
+      >
+        <i class="bi bi-x-circle me-1"></i> Not obtained
+      </span>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Card -->
+  <div class="card shadow-sm">
+    <div class="card-body p-4">
+      <!-- Meta row -->
+      <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+        {% if movie['genre'] %} {% for g in movie['genre'].split(',') %}
+        <span class="badge text-bg-light border">{{ g.strip() }}</span>
+        {% endfor %} {% endif %} {% if movie['rating'] %}
+        <span class="badge text-bg-warning-subtle border">
+          <i class="bi bi-star-fill me-1"></i>{{ movie['rating'] }}
+        </span>
+        {% endif %}
+      </div>
+
+      <!-- Details grid -->
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <div class="border rounded-3 p-3 h-100">
+            <div class="text-uppercase small text-muted mb-1">Title</div>
+            <div class="fw-medium">{{ movie['title'] }}</div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+          <div class="border rounded-3 p-3 h-100">
+            <div class="text-uppercase small text-muted mb-1">Year</div>
+            <div class="fw-medium">{{ movie['year'] or '—' }}</div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+          <div class="border rounded-3 p-3 h-100">
+            <div class="text-uppercase small text-muted mb-1">Rating</div>
+            <div class="fw-medium">
+              {% if movie['rating'] %} {{ movie['rating'] }} {% else %} — {%
+              endif %}
+            </div>
+          </div>
+        </div>
+
+        {# --- CAST --- #}
+        <div class="mt-4">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <h5 class="mb-0">Cast</h5>
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge text-bg-light border">
+                {{ movie['actors']|length if movie.get('actors') else
+                (movie['leading_actors'].split(',')|length if
+                movie.get('leading_actors') else 0) }}
+              </span>
+              <!-- Placeholder for future editing -->
+              <button type="button" class="btn btn-sm btn-primary" disabled>
+                <i class="bi bi-person-plus me-1"></i> Add actor (coming soon)
+              </button>
+            </div>
+          </div>
+
+          {% if movie.get('actors') and movie['actors']|length > 0 %}
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col">Actor</th>
+                  {% if movie['actors'][0].get('role') %}
+                  <th scope="col" class="text-nowrap">Role</th>
+                  {% endif %}
+                  <th scope="col" class="text-end text-nowrap">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for a in movie['actors'] %}
+                <tr>
+                  <td>
+                    {% if a.get('id') %}
+                    <a
+                      href="{{ url_for('actor_detail', actor_id=a['id']) }}"
+                      class="text-decoration-none"
+                    >
+                      {{ a.get('full_name') or a.get('name') }}
+                    </a>
+                    {% else %} {{ a.get('full_name') or a.get('name') }} {%
+                    endif %}
+                  </td>
+                  {% if movie['actors'][0].get('role') %}
+                  <td class="text-muted">{{ a.get('role') or '—' }}</td>
+                  {% endif %}
+                  <td class="text-end">
+                    <!-- Placeholder for future remove action -->
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-danger"
+                      disabled
+                    >
+                      <i class="bi bi-trash me-1"></i> Remove
+                    </button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% elif movie.get('leading_actors') %}
+          <!-- Fallback to your existing comma-separated string -->
+          <div class="border rounded-3 p-3">
+            <div class="d-flex flex-wrap gap-2">
+              {% for name in movie['leading_actors'].split(',') %}
+              <span class="badge text-bg-light border">{{ name.strip() }}</span>
+              {% endfor %}
+            </div>
+          </div>
+          {% else %}
+          <div class="border rounded-3 p-3 text-muted">
+            No cast recorded yet.
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="col-12">
+          <div class="border rounded-3 p-3 h-100">
+            <div class="d-flex align-items-center justify-content-between">
+              <div>
+                <div class="text-uppercase small text-muted mb-1">Notes</div>
+                <div class="fw-normal">
+                  {% if movie['notes'] %} {{ movie['notes'] }} {% else %}
+                  <span class="text-muted">No notes yet.</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer actions (disabled for now to signal read-only) -->
+      <div class="d-flex gap-2 mt-4">
+        <button type="button" class="btn btn-primary" disabled>
+          <i class="bi bi-pencil-square me-1"></i> Edit (coming soon)
+        </button>
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          onclick="history.back()"
+        >
+          <i class="bi bi-arrow-left me-1"></i> Back
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* small visual polish without fighting Bootstrap */
+  .badge.bg-outline-secondary {
+    background: transparent;
+  }
+</style>
+
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base.html" %} {% block content %}
+
+<div class="container py-5">
+  <div class="mb-4">
+    <h2 class="mb-1">MediaDB</h2>
+    <p class="text-muted mb-0">
+      Collection point for all my legally acquired media.
+    </p>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-12 col-md-6 col-lg-3">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="text-uppercase small text-muted">Movies</div>
+          <div class="display-5 fw-semibold">{{ counts.movies }}</div>
+          <a class="stretched-link" href="{{ url_for('list_movies') }}"></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-lg-3">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="text-uppercase small text-muted">Shows</div>
+          <div class="display-5 fw-semibold">{{ counts.shows }}</div>
+          <a class="stretched-link" href="{{ url_for('list_shows') }}"></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-lg-3">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="text-uppercase small text-muted">Actors</div>
+          <div class="display-5 fw-semibold">{{ counts.actors }}</div>
+          <a class="stretched-link" href="{{ url_for('list_actors') }}"></a>
+        </div>
+      </div>
+    </div>
+
+    {% if counts.media_total is not none %}
+    <div class="col-12 col-md-6 col-lg-3">
+      <div class="card shadow-sm h-100">
+        <div class="card-body d-flex justify-content-between align-items-start">
+          <div>
+            <div class="text-uppercase small text-muted">All media</div>
+            <div class="display-5 fw-semibold">{{ counts.media_total }}</div>
+          </div>
+          {% if counts.not_obtained is not none %}
+          <span
+            class="badge {{ 'bg-danger' if counts.not_obtained > 0 else 'text-bg-light border' }}"
+          >
+            {{ counts.not_obtained }} not obtained
+          </span>
+          {% endif %}
+          <a class="stretched-link" href="{{ url_for('list_movies') }}"></a>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

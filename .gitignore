@@ -173,10 +173,11 @@ cython_debug/
 .sqlite3
 *.db
 
-csv/
 *.csv
+*.csv#
 
 .DS_Store
 
-
 scratch.py
+
+.vscode/

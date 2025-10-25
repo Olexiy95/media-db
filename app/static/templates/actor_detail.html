@@ -1,0 +1,216 @@
+{% extends "base.html" %} {% block content %}
+
+<div class="container py-5">
+  <!-- Header -->
+  <div
+    class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4"
+  >
+    <div class="d-flex align-items-center gap-3">
+      <h2 class="mb-0">
+        <a
+          class="text-decoration-none text-dark"
+          href="https://www.google.com/search?q={{ actor.full_name }} actor"
+          target="_blank"
+        >
+          {{ actor.full_name }}
+        </a>
+      </h2>
+      <span class="badge bg-secondary">
+        {{ (actor.movies|length) + (actor.shows|length) }} credits
+      </span>
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+      <button type="button" class="btn btn-primary" disabled>
+        <i class="bi bi-pencil-square me-1"></i> Edit (coming soon)
+      </button>
+      <button
+        type="button"
+        class="btn btn-outline-secondary"
+        onclick="history.back()"
+      >
+        <i class="bi bi-arrow-left me-1"></i> Back
+      </button>
+    </div>
+  </div>
+
+  <!-- Card -->
+  <div class="card shadow-sm">
+    <div class="card-body p-4">
+      <!-- Details grid -->
+      <div class="card-body p-4">
+        <div class="row g-4">
+          <!-- LEFT: Photo -->
+          <aside class="col-12 col-md-4">
+            <div class="border rounded-3 p-3 text-center">
+              <img
+                src="{{ url_for('static', path='img/avatar-placeholder.png') }}"
+                alt="{{ actor.full_name }} photo"
+                class="img-fluid rounded-3"
+                style="
+                  max-width: 320px;
+                  min-height: 550px;
+                  max-height: 550px;
+                  width: auto;
+                  height: auto;
+                  object-fit: cover;
+                "
+              />
+              <div class="small text-muted mt-2">Photo</div>
+            </div>
+          </aside>
+
+          <!-- RIGHT: Details + Filmography -->
+          <section class="col-12 col-md-8">
+            <!-- Details grid -->
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <div class="border rounded-3 p-3 h-100">
+                  <div class="text-uppercase small text-muted mb-1">
+                    Full Name
+                  </div>
+                  <div class="fw-medium">{{ actor.full_name }}</div>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <div class="border rounded-3 p-3 h-100">
+                  <div class="text-uppercase small text-muted mb-1">
+                    Pseudonym
+                  </div>
+                  <div class="fw-medium">{{ actor.pseudonym or '—' }}</div>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="border rounded-3 p-3 h-100">
+                  <div class="text-uppercase small text-muted mb-1">Notes</div>
+                  <div class="fw-normal">
+                    {% if actor.notes %} {{ actor.notes }} {% else %}
+                    <span class="text-muted">No notes yet.</span>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Filmography -->
+            <div class="mt-4">
+              <h5 class="mb-3">Filmography</h5>
+
+              <!-- Movies -->
+              <div class="mb-4">
+                <div
+                  class="d-flex align-items-center justify-content-between mb-2"
+                >
+                  <h6 class="mb-0">Movies</h6>
+                  <span class="badge text-bg-light border"
+                    >{{ actor.movies|length }}</span
+                  >
+                </div>
+
+                {% if actor.movies and actor.movies|length > 0 %}
+                <div class="table-responsive">
+                  <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                      <tr>
+                        <th scope="col">Title</th>
+                        <th scope="col" class="text-nowrap">Year</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for m in actor.movies %}
+                      <tr>
+                        <td>
+                          {% if m.id %}
+                          <a
+                            href="{{ url_for('movie_detail', movie_id=m.id) }}"
+                            class="text-decoration-none"
+                            >{{ m.title }}</a
+                          >
+                          {% else %} {{ m.title }} {% endif %}
+                        </td>
+                        <td class="text-muted">{{ m.year or '—' }}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+                {% else %}
+                <div class="border rounded-3 p-3 text-muted">
+                  No movies on record.
+                </div>
+                {% endif %}
+              </div>
+
+              <!-- Shows -->
+              <div class="mb-2">
+                <div
+                  class="d-flex align-items-center justify-content-between mb-2"
+                >
+                  <h6 class="mb-0">Shows</h6>
+                  <span class="badge text-bg-light border"
+                    >{{ actor.shows|length }}</span
+                  >
+                </div>
+
+                {% if actor.shows and actor.shows|length > 0 %}
+                <div class="table-responsive">
+                  <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                      <tr>
+                        <th scope="col">Title</th>
+                        <th scope="col" class="text-nowrap">Years</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for s in actor.shows %}
+                      <tr>
+                        <td>
+                          {% if s.id %}
+                          <a
+                            href="{{ url_for('show_detail', show_id=s.id) }}"
+                            class="text-decoration-none"
+                            >{{ s.title }}</a
+                          >
+                          {% else %} {{ s.title }} {% endif %}
+                        </td>
+                        <td class="text-muted">
+                          {% if s.start_year or s.end_year %} {{ s.start_year or
+                          '—' }}{% if s.end_year %}&ndash;{{ s.end_year }}{%
+                          endif %} {% else %} — {% endif %}
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+                {% else %}
+                <div class="border rounded-3 p-3 text-muted">
+                  No shows on record.
+                </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Footer actions (read-only) -->
+            <div class="d-flex gap-2 mt-4">
+              <button type="button" class="btn btn-primary" disabled>
+                <i class="bi bi-pencil-square me-1"></i> Edit (coming soon)
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                onclick="history.back()"
+              >
+                <i class="bi bi-arrow-left me-1"></i> Back
+              </button>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% endblock %}
+</div>
