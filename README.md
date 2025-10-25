@@ -14,9 +14,9 @@
 
     At some point will also add optional support for a PSQL docker container since sqlite doesn't come with much functionality. Since it's hosted on an ubuntu server full of docker containers anyway, could be a neater approach and most importantly much more unnecessary.
 
-### Model (So Far):
+### Model (Outdated need to update):
 
-<img src="./media-db_model.png" alt="Description" width="350" height="500"/>
+<img src="./media-db_model_old.png" alt="Description" width="350" height="500"/>
 
 Seed resources to CSV directory:
 
