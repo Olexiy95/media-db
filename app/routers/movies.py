@@ -2,7 +2,7 @@ from fastapi import HTTPException, Request, APIRouter, Depends, status
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, JSONResponse
 from app.db.db_control import MediaDB
-from app.models import MovieOut, MovieUpdate
+from app.db.pydantic_models import MovieOut, MovieUpdate
 from app.deps import get_db, get_templates
 
 router = APIRouter(prefix="/movies", tags=["movies"])

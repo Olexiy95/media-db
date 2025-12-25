@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.models import MovieOut, PageOut, ShowOut
+from app.db.pydantic_models import MovieOut, PageOut, ShowOut
 from fastapi import Request, Depends
 from app.db.db_control import MediaDB
 from app.deps import get_db

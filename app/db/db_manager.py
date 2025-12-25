@@ -8,6 +8,10 @@ from app.resource_loader import (
 from app.utils import _norm_base, _parse_actor, _get_or_create_actor_id, _parse_years
 import logging
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
@@ -49,6 +53,7 @@ class MediaDBManager:
 
     def initialise_views(self, views_sql_file="sql/views.sql"):
         """Reads and executes SQL statements from a file to set up the database views."""
+        # Might move this to a Docker init later
         try:
             with open(views_sql_file, "r") as f:
                 sql_script = f.read()

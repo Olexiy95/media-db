@@ -3,7 +3,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
 from app.db.db_control import MediaDB
 from sqlite3 import IntegrityError
-from app.models import ActorIn
+from app.db.pydantic_models import ActorIn
 from contextlib import asynccontextmanager
 from app.deps import get_db, get_templates
 
