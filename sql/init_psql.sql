@@ -1,3 +1,6 @@
+CREATE SCHEMA IF NOT EXISTS app;
+SET search_path TO app, public;
+
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE EXTENSION IF NOT EXISTS citext;
 
@@ -38,7 +41,7 @@ CREATE TABLE media (
   notes        TEXT,
   obtained     BOOLEAN NOT NULL DEFAULT FALSE,
   sort_title   TEXT NOT NULL,
-  type         TEXT NOT NULL CHECK (type IN ('movie', 'show', 'music'))
+  type         TEXT NOT NULL CHECK (type IN ('movie', 'show', 'music', 'book', 'game'))
 );
 
 CREATE INDEX idx_media_sort ON media (sort_title);
