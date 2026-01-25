@@ -28,9 +28,11 @@ CREATE TABLE app_meta (
   last_backup  TIMESTAMPTZ
 );
 
-CREATE TABLE directors (
+
+CREATE TABLE IF NOT EXISTS people (
   id   TEXT PRIMARY KEY DEFAULT nanoid(10),
-  name CITEXT NOT NULL UNIQUE
+  name CITEXT NOT NULL UNIQUE,
+  pseudonym TEXT
 );
 
 CREATE TABLE media (
@@ -46,7 +48,6 @@ CREATE TABLE media (
 
 CREATE INDEX idx_media_sort ON media (sort_title);
 CREATE INDEX idx_media_type ON media (type);
-CREATE INDEX idx_media_obtained ON media (obtained);
 
 CREATE TABLE movies (
   id        TEXT PRIMARY KEY DEFAULT nanoid(10),
@@ -55,7 +56,7 @@ CREATE TABLE movies (
   director  TEXT,
   duration  INTEGER,
   FOREIGN KEY (media_id) REFERENCES media (id) ON DELETE CASCADE,
-  FOREIGN KEY (director) REFERENCES directors (id) ON DELETE SET NULL
+  FOREIGN KEY (director) REFERENCES people (id) ON DELETE SET NULL
 );
 
 CREATE INDEX idx_movies_media_id ON movies (media_id);
@@ -103,11 +104,6 @@ CREATE TABLE show_episodes (
 
 CREATE INDEX idx_show_episodes_show_id ON show_episodes (show_id);
 
-CREATE TABLE actors (
-  id        TEXT PRIMARY KEY DEFAULT nanoid(10),
-  name      CITEXT NOT NULL UNIQUE,
-  pseudonym TEXT
-);
 
 CREATE TABLE genres (
   id   TEXT PRIMARY KEY DEFAULT nanoid(10),
@@ -120,7 +116,7 @@ CREATE TABLE actor_movie_relationship (
   billing_order INTEGER NOT NULL CHECK (billing_order >= 1),
   PRIMARY KEY (movie_id, actor_id),
   FOREIGN KEY (movie_id) REFERENCES movies (id) ON DELETE CASCADE,
-  FOREIGN KEY (actor_id) REFERENCES actors (id) ON DELETE RESTRICT
+  FOREIGN KEY (actor_id) REFERENCES people (id) ON DELETE RESTRICT
 );
 
 CREATE INDEX idx_am_actor ON actor_movie_relationship (actor_id);
@@ -131,7 +127,7 @@ CREATE TABLE actor_show_relationship (
   billing_order INTEGER NOT NULL CHECK (billing_order >= 1),
   PRIMARY KEY (show_id, actor_id),
   FOREIGN KEY (show_id) REFERENCES shows (id) ON DELETE CASCADE,
-  FOREIGN KEY (actor_id) REFERENCES actors (id) ON DELETE RESTRICT
+  FOREIGN KEY (actor_id) REFERENCES people (id) ON DELETE RESTRICT
 );
 
 CREATE INDEX idx_as_actor ON actor_show_relationship (actor_id);
@@ -175,3 +171,31 @@ CREATE TABLE show_collection_relationship (
 );
 
 CREATE INDEX idx_sc_collection ON show_collection_relationship (collection_id);
+
+
+CREATE TABLE IF NOT EXISTS games (
+  id          TEXT PRIMARY KEY DEFAULT nanoid(10),
+  title       CITEXT NOT NULL,
+  developer   CITEXT NOT NULL,
+  release_year INTEGER NOT NULL CHECK (release_year > 0),
+  genre      CITEXT NOT NULL,
+  platform  CITEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS books (
+  id          TEXT PRIMARY KEY DEFAULT nanoid(10),
+  title       CITEXT NOT NULL,
+  author      CITEXT NOT NULL,
+  genre       CITEXT NOT NULL,
+  publisher   CITEXT,
+  publish_year INTEGER CHECK (publish_year > 0)
+);
+
+CREATE TABLE IF NOT EXISTS music_albums (
+  id          TEXT PRIMARY KEY DEFAULT nanoid(10),
+  title       CITEXT NOT NULL,
+  artist      CITEXT NOT NULL,
+  genre       CITEXT NOT NULL,
+  release_year INTEGER CHECK (release_year > 0)
+);
+
